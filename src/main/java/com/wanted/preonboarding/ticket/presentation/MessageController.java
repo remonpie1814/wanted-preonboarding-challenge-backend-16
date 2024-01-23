@@ -1,13 +1,12 @@
 package com.wanted.preonboarding.ticket.presentation;
 
 import com.wanted.preonboarding.notification.application.SendMessage;
+import com.wanted.preonboarding.ticket.domain.dto.ReserveInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -33,18 +32,18 @@ public class MessageController {
     }
 
     // 메시지 이벤트 트리거
-    @GetMapping(value="/trigger")
-    public ResponseEntity<String> trigger(@RequestParam String performanceId){
-        sendMessage.sendEvent(performanceId,"이 공연이 취소되었어요");
+    @PostMapping(value="/trigger")
+    public ResponseEntity<String> trigger(@RequestBody ReserveInfo reserveInfo){
+        sendMessage.sendCancelledEvent(reserveInfo);
         return ResponseEntity.ok().body("done");
     }
 
     // 브라우저에서 확인하기 위한 경로
     @GetMapping("/testSSE")
-    public ResponseEntity<String> exampleMethod() {
+    public ResponseEntity<String> testSSE() {
         String htmlContent = "<html><body><script>" +
-                "const sse = new EventSource(\"http://localhost:8016/connect?performanceId=1\");" +
-                "sse.addEventListener('message', e => {  \n" +
+                "const sse = new EventSource(\"http://localhost:8016/connect?performanceId=8520baeb-b987-11ee-a439-0242ac120002\");" +
+                "sse.addEventListener('cancel', e => {  \n" +
                 "    const { data: receivedMsg } = e;  \n" +
                 "    alert(receivedMsg);  \n" +
                 "});" +
