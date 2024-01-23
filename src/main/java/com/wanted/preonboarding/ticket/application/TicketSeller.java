@@ -21,8 +21,8 @@ public class TicketSeller {
     private final ReservationRepository reservationRepository;
     private long totalAmount = 0L;
 
-    public List<PerformanceInfo> getAllPerformanceInfoList() {
-        return performanceRepository.findByIsReserve("enable")
+    public List<PerformanceInfo> getAllPerformanceInfoList(String isReserve) {
+        return performanceRepository.findByIsReserve(isReserve)
             .stream()
             .map(PerformanceInfo::of)
             .toList();
