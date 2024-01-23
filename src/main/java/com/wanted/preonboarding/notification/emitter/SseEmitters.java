@@ -1,4 +1,4 @@
-package com.wanted.preonboarding.core.emmiter;
+package com.wanted.preonboarding.notification.emitter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
