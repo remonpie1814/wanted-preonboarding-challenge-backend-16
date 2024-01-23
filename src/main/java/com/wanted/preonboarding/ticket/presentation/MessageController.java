@@ -14,7 +14,6 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 public class MessageController {
     private final SendMessage sendMessage;
 
