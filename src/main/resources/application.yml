@@ -4,8 +4,9 @@ server:
 spring:
   datasource:
     url: jdbc:mysql://localhost:13306/wanted
-    username: wanted
-    password: backend
+    # 추가해준 wanted에 쓰기 읽기 권한 있는 유저
+    username: yeji
+    password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   # JPA ??
