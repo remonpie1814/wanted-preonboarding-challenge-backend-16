@@ -7,6 +7,7 @@ import com.wanted.preonboarding.ticket.domain.entity.Reservation;
 import com.wanted.preonboarding.ticket.infrastructure.repository.PerformanceRepository;
 import com.wanted.preonboarding.ticket.infrastructure.repository.ReservationRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,9 @@ public class TicketSeller {
 
     public List<PerformanceInfo> getAllPerformanceInfoList() {
         return performanceRepository.findByIsReserve("enable")
-            .stream()
-            .map(PerformanceInfo::of)
-            .toList();
+                .stream()
+                .map(PerformanceInfo::of)
+                .toList();
     }
 
     public PerformanceInfo getPerformanceInfoDetail(String name) {
@@ -37,7 +38,7 @@ public class TicketSeller {
     public boolean reserve(ReserveInfo reserveInfo) {
         log.info("reserveInfo ID => {}", reserveInfo.getPerformanceId());
         Performance info = performanceRepository.findById(reserveInfo.getPerformanceId())
-            .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(EntityNotFoundException::new);
         String enableReserve = info.getIsReserve();
         if (enableReserve.equalsIgnoreCase("enable")) {
             // 1. 결제
@@ -53,16 +54,24 @@ public class TicketSeller {
     }
 
     // 모든 예약 목록
-    public List<Reservation> getAllReservationList(){
+    public List<Reservation> getAllReservationList() {
         return reservationRepository.findAll();
     }
 
-    public List<Reservation> getReservation(String name, String phoneNumber){
-        return reservationRepository.findByNameAndPhoneNumber(name,phoneNumber);
+    public List<Reservation> getReservationByNameAndPhone(String name, String phoneNumber) {
+        return reservationRepository.findByNameAndPhoneNumber(name, phoneNumber);
     }
 
-    public String getPerformanceName(UUID performanceId){
+    public String getPerformanceName(UUID performanceId) {
         return performanceRepository.findById(performanceId).get().getName();
     }
 
+    @Transactional(rollbackOn = Exception.class)
+    public List<Reservation> cancelReservation(UUID performanceId, int round, char line, int seat) {
+        List<Reservation> targetReservations = reservationRepository.findByPerformanceIdAndRoundAndLineAndSeat(performanceId, round, line, seat);
+        targetReservations.forEach(reservation -> {
+            reservationRepository.delete(reservation);
+        });
+        return targetReservations;
+    }
 }

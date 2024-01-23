@@ -1,8 +1,8 @@
 package com.wanted.preonboarding.ticket.presentation;
 
 import com.wanted.preonboarding.core.domain.response.ResponseHandler;
+import com.wanted.preonboarding.notification.application.SendMessage;
 import com.wanted.preonboarding.ticket.application.TicketSeller;
-import com.wanted.preonboarding.ticket.domain.dto.PerformanceInfo;
 import com.wanted.preonboarding.ticket.domain.dto.ReserveInfo;
 import com.wanted.preonboarding.ticket.domain.entity.Reservation;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +18,7 @@ import java.util.*;
 public class ReserveController {
     private final TicketSeller ticketSeller;
 
+    private final SendMessage sendMessage;
     // 예약
     @PostMapping("/")
     public ResponseEntity<ResponseHandler<ReserveInfo>> reserve(@RequestBody ReserveInfo reserveInfo) {
@@ -51,7 +52,7 @@ public class ReserveController {
         String name = request.get("name");
         String phoneNumber = request.get("phoneNumber");
         // note: 리스트를 돌며 공연 ID로 Name을 가져오는 쿼리를 보내는데 이럴 바에야 그냥 JOIN연산을 하는 게 낫지 않을까?
-        List<ReserveInfo> reservations = ticketSeller.getReservation(name, phoneNumber)
+        List<ReserveInfo> reservations = ticketSeller.getReservationByNameAndPhone(name, phoneNumber)
                 .stream()
                 .map(e -> ReserveInfo.of(e, ticketSeller.getPerformanceName(e.getPerformanceId())))
                 .toList();
@@ -66,5 +67,37 @@ public class ReserveController {
                 );
     }
 
+    // 예약 취소
+    @PostMapping("/cancel")
+    public ResponseEntity<ResponseHandler<String>> cancel(@RequestBody ReserveInfo reserveInfo){
+        System.out.println("cancel...");
+
+        // 여러 개 지울 때를 대비해 List로
+        List<Reservation> cancelledReservations = ticketSeller.cancelReservation(
+                reserveInfo.getPerformanceId(),
+                reserveInfo.getRound(),
+                reserveInfo.getLine(),
+                reserveInfo.getSeat()
+        );
+
+        List<ReserveInfo> reserveInfos = cancelledReservations
+                .stream()
+                .map(reservation -> {
+                    return ReserveInfo.of(reservation, ticketSeller.getPerformanceName(reservation.getPerformanceId()));
+                })
+                .toList();
+
+        reserveInfos.forEach(r->{
+            sendMessage.sendEvent(r.getPerformanceId().toString(),"공연 취소");
+        });
+
+        return ResponseEntity
+                .ok()
+                .body(ResponseHandler.<String>builder()
+                        .statusCode(HttpStatus.OK)
+                        .data("canceled")
+                        .build()
+                );
+    }
 
 }
