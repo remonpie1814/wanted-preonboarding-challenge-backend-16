@@ -12,7 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
+@SuppressWarnings("ALL")
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -48,6 +50,19 @@ public class TicketSeller {
         } else {
             return false;
         }
+    }
+
+    // 모든 예약 목록
+    public List<Reservation> getAllReservationList(){
+        return reservationRepository.findAll();
+    }
+
+    public List<Reservation> getReservation(String name, String phoneNumber){
+        return reservationRepository.findByNameAndPhoneNumber(name,phoneNumber);
+    }
+
+    public String getPerformanceName(UUID performanceId){
+        return performanceRepository.findById(performanceId).get().getName();
     }
 
 }
