@@ -4,6 +4,7 @@ import com.wanted.preonboarding.core.domain.response.ResponseHandler;
 import com.wanted.preonboarding.ticket.application.TicketSeller;
 import com.wanted.preonboarding.ticket.domain.dto.PerformanceInfo;
 import com.wanted.preonboarding.ticket.domain.dto.ReserveInfo;
+import com.wanted.preonboarding.ticket.domain.entity.Reservation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,13 +33,14 @@ public class QueryController {
             );
     }
 
-    // 예약 목록을 그냥 모두 가져오는 api. 테스트용.
+    // note: 예약 목록을 그냥 모두 가져오는 api. 테스트용.
     @GetMapping("/all/reservation")
-    public ResponseEntity<ResponseHandler<List<ReserveInfo>>> getAllReservationList() {
+    public ResponseEntity<ResponseHandler<List<Reservation>>> getAllReservationList() {
         System.out.println("getAllReservation");
+
         return ResponseEntity
                 .ok()
-                .body(ResponseHandler.<List<ReserveInfo>>builder()
+                .body(ResponseHandler.<List<Reservation>>builder()
                         .message("Success")
                         .statusCode(HttpStatus.OK)
                         .data(ticketSeller.getAllReservationList())
@@ -46,4 +48,5 @@ public class QueryController {
                 );
     }
 
+    
 }
