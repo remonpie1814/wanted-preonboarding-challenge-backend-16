@@ -18,7 +18,7 @@ public class ReserveController {
         System.out.println("reservation");
 
         return ticketSeller.reserve(ReserveInfo.builder()
-            .performanceId(UUID.fromString("d12ebf01-b980-11ee-b74e-0242ac120002"))
+            .performanceId(UUID.fromString("8520baeb-b987-11ee-a439-0242ac120002"))
             .reservationName("유진호")
             .reservationPhoneNumber("010-1234-1234")
             .reservationStatus("reserve")

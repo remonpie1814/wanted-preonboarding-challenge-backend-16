@@ -1,5 +1,7 @@
 package com.wanted.preonboarding.ticket.domain.dto;
 
+import com.wanted.preonboarding.ticket.domain.entity.Performance;
+import com.wanted.preonboarding.ticket.domain.entity.Reservation;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,4 +22,13 @@ public class ReserveInfo {
     private int round;
     private char line;
     private int seat;
+
+
+    public static ReserveInfo of(Reservation entity) {
+        return ReserveInfo.builder()
+                .performanceId(entity.getPerformanceId())
+                .reservationName(entity.getName())
+                .reservationPhoneNumber(entity.getPhoneNumber())
+                .build();
+    }
 }

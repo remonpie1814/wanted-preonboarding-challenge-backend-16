@@ -28,6 +28,14 @@ public class TicketSeller {
             .toList();
     }
 
+    // 모든 예약 목록
+    public List<ReserveInfo> getAllReservationList(){
+        return reservationRepository.findAll()
+                .stream()
+                .map(ReserveInfo::of)
+                .toList();
+    }
+
     public PerformanceInfo getPerformanceInfoDetail(String name) {
         return PerformanceInfo.of(performanceRepository.findByName(name));
     }
