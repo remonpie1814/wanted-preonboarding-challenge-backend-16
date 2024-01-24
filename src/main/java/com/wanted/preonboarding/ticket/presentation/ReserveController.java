@@ -80,6 +80,7 @@ public class ReserveController {
                 reserveInfo.getSeat()
         );
 
+        // note: 조인연산으로 하면 좋지 않을까???
         List<ReserveInfo> reserveInfos = cancelledReservations
                 .stream()
                 .map(reservation -> {
@@ -87,9 +88,7 @@ public class ReserveController {
                 })
                 .toList();
 
-        reserveInfos.forEach(r->{
-            sendMessage.sendEvent(r.getPerformanceId().toString(),"공연 취소");
-        });
+        reserveInfos.forEach(sendMessage::sendCancelledEvent);
 
         return ResponseEntity
                 .ok()

@@ -20,7 +20,6 @@ public class SseEmitters {
         this.emitters.computeIfAbsent(name, k -> new ArrayList<SseEmitter>());
         this.emitters.get(name).add(emitter);
         log.info("new emitter added: {}- {}", name, emitter);
-        log.info("emitter list size: {}", emitters.get(name).size());
         emitter.onCompletion(() -> {
             log.info("onCompletion callback");
             this.emitters.get(name).remove(emitter);
@@ -35,7 +34,7 @@ public class SseEmitters {
 
     public void sendEvent(String to, String message) {
         List<SseEmitter> emitterList = this.emitters.get(to);
-        if(emitterList==null || emitterList.size()<1){
+        if(emitterList==null || emitterList.isEmpty()){
             return;
         }
         emitterList.forEach(sseEmitter ->
