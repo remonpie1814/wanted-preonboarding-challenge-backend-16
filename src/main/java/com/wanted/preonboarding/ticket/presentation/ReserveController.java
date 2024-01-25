@@ -3,6 +3,8 @@ package com.wanted.preonboarding.ticket.presentation;
 import com.wanted.preonboarding.core.domain.response.ResponseHandler;
 import com.wanted.preonboarding.notification.application.SendMessage;
 import com.wanted.preonboarding.ticket.application.TicketSeller;
+import com.wanted.preonboarding.ticket.application.dto.request.ReserveRequest;
+import com.wanted.preonboarding.ticket.application.dto.response.ReserveResponse;
 import com.wanted.preonboarding.ticket.domain.dto.ReserveInfo;
 import com.wanted.preonboarding.ticket.domain.entity.Reservation;
 import lombok.RequiredArgsConstructor;
@@ -17,32 +19,22 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ReserveController {
     private final TicketSeller ticketSeller;
-
     private final SendMessage sendMessage;
+
     // 예약
     @PostMapping("/")
-    public ResponseEntity<ResponseHandler<ReserveInfo>> reserve(@RequestBody ReserveInfo reserveInfo) {
-        System.out.println("reservation");
-        boolean isReserved = ticketSeller.reserve(reserveInfo);
-        ReserveInfo response =
-                ReserveInfo.of(reserveInfo, ticketSeller.getPerformanceName(reserveInfo.getPerformanceId()));
-        if (isReserved) {
-            return ResponseEntity
-                    .ok()
-                    .body(ResponseHandler.<ReserveInfo>builder()
-                            .message("Success")
-                            .statusCode(HttpStatus.OK)
-                            .data(response)
-                            .build()
-                    );
-        }
+    public ResponseEntity<ResponseHandler<ReserveResponse>> reserve(@RequestBody ReserveRequest request) {
+        System.out.println("reserve...");
+
         return ResponseEntity
-                .internalServerError()
-                .body(ResponseHandler.<ReserveInfo>builder()
-                        .message("Error")
-                        .statusCode(HttpStatus.INTERNAL_SERVER_ERROR)
+                .ok()
+                .body(ResponseHandler.<ReserveResponse>builder()
+                        .message("Success")
+                        .statusCode(HttpStatus.OK)
+                        .data(ticketSeller.reserve(request))
                         .build()
                 );
+
 
     }
 
@@ -69,7 +61,7 @@ public class ReserveController {
 
     // 예약 취소
     @PostMapping("/cancel")
-    public ResponseEntity<ResponseHandler<String>> cancel(@RequestBody ReserveInfo reserveInfo){
+    public ResponseEntity<ResponseHandler<String>> cancel(@RequestBody ReserveInfo reserveInfo) {
         System.out.println("cancel...");
 
         // 여러 개 지울 때를 대비해 List로

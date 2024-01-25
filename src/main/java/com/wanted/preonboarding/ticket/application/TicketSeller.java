@@ -1,10 +1,15 @@
 package com.wanted.preonboarding.ticket.application;
 
+import com.wanted.preonboarding.ticket.application.dto.request.ReserveRequest;
+import com.wanted.preonboarding.ticket.application.dto.response.ReserveResponse;
 import com.wanted.preonboarding.ticket.domain.dto.PerformanceInfo;
 import com.wanted.preonboarding.ticket.domain.dto.ReserveInfo;
 import com.wanted.preonboarding.ticket.domain.entity.Performance;
+import com.wanted.preonboarding.ticket.domain.entity.PerformanceSeatInfo;
 import com.wanted.preonboarding.ticket.domain.entity.Reservation;
+import com.wanted.preonboarding.ticket.domain.entity.User;
 import com.wanted.preonboarding.ticket.infrastructure.repository.PerformanceRepository;
+import com.wanted.preonboarding.ticket.infrastructure.repository.PerformanceSeatInfoRepository;
 import com.wanted.preonboarding.ticket.infrastructure.repository.ReservationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -22,7 +27,7 @@ import java.util.UUID;
 public class TicketSeller {
     private final PerformanceRepository performanceRepository;
     private final ReservationRepository reservationRepository;
-    private long totalAmount = 0L;
+    private final PerformanceSeatInfoRepository seatInfoRepository;
 
     public List<PerformanceInfo> getAllPerformanceInfoList(String isReserve) {
         return performanceRepository.findByIsReserve(isReserve)
@@ -35,22 +40,29 @@ public class TicketSeller {
         return PerformanceInfo.of(performanceRepository.findByName(name));
     }
 
-    public boolean reserve(ReserveInfo reserveInfo) {
-        log.info("reserveInfo ID => {}", reserveInfo.getPerformanceId());
-        Performance info = performanceRepository.findById(reserveInfo.getPerformanceId())
-                .orElseThrow(EntityNotFoundException::new);
-        String enableReserve = info.getIsReserve();
-        if (enableReserve.equalsIgnoreCase("enable")) {
-            // 1. 결제
-            int price = info.getPrice();
-            reserveInfo.setAmount(reserveInfo.getAmount() - price);
-            // 2. 예매 진행
-            reservationRepository.save(Reservation.of(reserveInfo));
-            return true;
+    @Transactional(rollbackOn = Exception.class)
+    public ReserveResponse reserve(ReserveRequest request) {
+        // 예약정보
+        Reservation reservation = request.getReservation();
+        // 공연정보
+        Performance performance = performanceRepository.findByIdAndIsReserve(UUID.fromString(request.getPerformanceId()),"enable")
+                .orElseThrow();
+        // 좌석정보
+        PerformanceSeatInfo seatInfo = seatInfoRepository
+                .findByPerformanceIdAndRoundAndLineAndSeatAndIsReserve(
+                        UUID.fromString(request.getPerformanceId()),
+                        request.getRound(),
+                        request.getLine(),
+                        request.getSeat(),
+                        "enable"
+                ).orElseThrow();
+        // 지불
+        request.getUser().pay(performance.getPrice());
 
-        } else {
-            return false;
-        }
+        // 예약
+        reservationRepository.save(reservation);
+
+        return ReserveResponse.of(reservation,performance);
     }
 
     // 모든 예약 목록
