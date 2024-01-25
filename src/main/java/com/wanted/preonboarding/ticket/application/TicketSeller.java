@@ -47,7 +47,7 @@ public class TicketSeller {
         Reservation reservation = request.getReservation();
         // 공연정보
         Performance performance = performanceRepository.findByIdAndIsReserve(UUID.fromString(request.getPerformanceId()), "enable")
-                .orElseThrow(()->new NotFoundException("Performance"));
+                .orElseThrow(() -> new NotFoundException("Performance"));
         // 좌석정보
         PerformanceSeatInfo seatInfo = seatInfoRepository
                 .findByPerformanceIdAndRoundAndLineAndSeatAndIsReserve(
@@ -56,7 +56,7 @@ public class TicketSeller {
                         request.getLine(),
                         request.getSeat(),
                         "enable"
-                ).orElseThrow(()-> new NotFoundException("Seat"));
+                ).orElseThrow(() -> new NotFoundException("Seat"));
         // 지불
         request.getUser().pay(performance.getPrice());
 
@@ -86,7 +86,7 @@ public class TicketSeller {
     @Transactional(rollbackOn = Exception.class)
     public ReservationCancelResponse cancelReservation(ReservationCancelRequest request) throws NotFoundException {
         Performance targetPerformance = performanceRepository.findById(UUID.fromString(request.getPerformanceId()))
-                .orElseThrow(()->new NotFoundException("Performance"));
+                .orElseThrow(() -> new NotFoundException("Performance"));
         Reservation targetReservation = reservationRepository
                 .findByPerformanceIdAndRoundAndLineAndSeat(
                         UUID.fromString(request.getPerformanceId()),
@@ -94,9 +94,21 @@ public class TicketSeller {
                         request.getLine(),
                         request.getSeat()
                 )
-                .orElseThrow(()->new NotFoundException("Reservation"));
+                .orElseThrow(() -> new NotFoundException("Reservation"));
+
+        PerformanceSeatInfo seatInfo = seatInfoRepository
+                .findByPerformanceIdAndRoundAndLineAndSeatAndIsReserve(
+                        UUID.fromString(request.getPerformanceId()),
+                        request.getRound(),
+                        request.getLine(),
+                        request.getSeat(),
+                        "disable"
+                ).orElseThrow(() -> new NotFoundException("Seat"));
+        seatInfo.changeEnable();
+        seatInfoRepository.save(seatInfo);
+
         reservationRepository.delete(targetReservation);
 
-        return ReservationCancelResponse.of(targetReservation,targetPerformance);
+        return ReservationCancelResponse.of(targetReservation, targetPerformance);
     }
 }

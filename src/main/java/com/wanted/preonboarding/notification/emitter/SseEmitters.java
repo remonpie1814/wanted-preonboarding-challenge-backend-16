@@ -52,6 +52,7 @@ public class SseEmitters {
     public void sendCancelledEvent(ReservationCancelResponse cancelInfo){
         String pid = cancelInfo.getPerformanceId().toString();
         List<SseEmitter> emitterList = this.emitters.get(pid);
+        if(emitterList==null || emitterList.isEmpty()){return;}
         emitterList.forEach(sseEmitter ->
                 {
                     try {

@@ -61,16 +61,16 @@ public class ReserveController {
 
     // 예약 취소
     @PostMapping("/cancel")
-    public ResponseEntity<ResponseHandler<String>> cancel(@RequestBody ReservationCancelRequest request) throws NotFoundException {
+    public ResponseEntity<ResponseHandler<ReservationCancelResponse>> cancel(@RequestBody ReservationCancelRequest request) throws NotFoundException {
         System.out.println("cancel...");
         ReservationCancelResponse response =  ticketSeller.cancelReservation(request);
         messageSender.sendCancelledEvent(response);
 
         return ResponseEntity
                 .ok()
-                .body(ResponseHandler.<String>builder()
+                .body(ResponseHandler.<ReservationCancelResponse>builder()
                         .statusCode(HttpStatus.OK)
-                        .data("canceled")
+                        .data(response)
                         .build()
                 );
     }

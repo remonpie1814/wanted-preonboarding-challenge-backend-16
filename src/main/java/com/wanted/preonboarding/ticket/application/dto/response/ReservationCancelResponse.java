@@ -15,7 +15,7 @@ import java.util.UUID;
 public class ReservationCancelResponse {
     private UUID performanceId;
     private String performanceName;
-    private Date startDate;
+    private String startDate;
     private int round;
     private char line;
     private int seat;
@@ -25,7 +25,7 @@ public class ReservationCancelResponse {
                 .builder()
                 .performanceId(reservation.getPerformanceId())
                 .performanceName(performance.getName())
-                .startDate(performance.getStart_date())
+                .startDate(performance.getStart_date().toString())
                 .round(reservation.getRound())
                 .line(reservation.getLine())
                 .seat(reservation.getSeat())
