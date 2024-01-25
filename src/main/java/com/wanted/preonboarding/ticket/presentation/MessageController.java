@@ -1,9 +1,9 @@
 package com.wanted.preonboarding.ticket.presentation;
 
-import com.wanted.preonboarding.notification.application.SendMessage;
+import com.wanted.preonboarding.notification.application.MessageSender;
+import com.wanted.preonboarding.ticket.application.dto.response.ReservationCancelResponse;
 import com.wanted.preonboarding.ticket.domain.dto.ReserveInfo;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +14,13 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 public class MessageController {
-    private final SendMessage sendMessage;
+    private final MessageSender messageSender;
 
     // performanceId와 함께 연결
     @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> connect(@RequestParam String performanceId) {
         SseEmitter emitter = new SseEmitter();
-        sendMessage.add(performanceId,emitter);
+        messageSender.add(performanceId,emitter);
         try {
             emitter.send(SseEmitter.event()
                     .name("connect")
@@ -33,8 +33,8 @@ public class MessageController {
 
     // 메시지 이벤트 트리거
     @PostMapping(value="/trigger")
-    public ResponseEntity<String> trigger(@RequestBody ReserveInfo reserveInfo){
-        sendMessage.sendCancelledEvent(reserveInfo);
+    public ResponseEntity<String> trigger(@RequestBody ReservationCancelResponse response){
+        messageSender.sendCancelledEvent(response);
         return ResponseEntity.ok().body("done");
     }
 

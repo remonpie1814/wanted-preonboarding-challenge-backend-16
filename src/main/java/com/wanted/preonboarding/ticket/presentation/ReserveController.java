@@ -1,15 +1,14 @@
 package com.wanted.preonboarding.ticket.presentation;
 
 import com.wanted.preonboarding.core.domain.response.ResponseHandler;
-import com.wanted.preonboarding.notification.application.SendMessage;
+import com.wanted.preonboarding.notification.application.MessageSender;
 import com.wanted.preonboarding.ticket.application.TicketSeller;
 import com.wanted.preonboarding.ticket.application.dto.request.ReservationCancelRequest;
 import com.wanted.preonboarding.ticket.application.dto.request.ReservationFindRequest;
 import com.wanted.preonboarding.ticket.application.dto.request.ReserveRequest;
 import com.wanted.preonboarding.ticket.application.dto.response.ReservationFindResponse;
-import com.wanted.preonboarding.ticket.application.dto.response.ReserveCancelResponse;
+import com.wanted.preonboarding.ticket.application.dto.response.ReservationCancelResponse;
 import com.wanted.preonboarding.ticket.application.dto.response.ReserveResponse;
-import com.wanted.preonboarding.ticket.domain.dto.ReserveInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +21,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ReserveController {
     private final TicketSeller ticketSeller;
-    private final SendMessage sendMessage;
+    private final MessageSender messageSender;
 
     // 예약
     @PostMapping("/")
@@ -63,8 +62,8 @@ public class ReserveController {
     @PostMapping("/cancel")
     public ResponseEntity<ResponseHandler<String>> cancel(@RequestBody ReservationCancelRequest request) {
         System.out.println("cancel...");
-        ReserveCancelResponse response =  ticketSeller.cancelReservation(request);
-        sendMessage.sendCancelledEvent(response);
+        ReservationCancelResponse response =  ticketSeller.cancelReservation(request);
+        messageSender.sendCancelledEvent(response);
 
         return ResponseEntity
                 .ok()

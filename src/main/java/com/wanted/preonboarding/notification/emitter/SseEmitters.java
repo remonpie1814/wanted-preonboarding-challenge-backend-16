@@ -1,7 +1,6 @@
 package com.wanted.preonboarding.notification.emitter;
 
-import com.wanted.preonboarding.ticket.application.dto.response.ReserveCancelResponse;
-import com.wanted.preonboarding.ticket.domain.dto.ReserveInfo;
+import com.wanted.preonboarding.ticket.application.dto.response.ReservationCancelResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -50,7 +49,7 @@ public class SseEmitters {
 
     }
 
-    public void sendCancelledEvent(ReserveCancelResponse cancelInfo){
+    public void sendCancelledEvent(ReservationCancelResponse cancelInfo){
         String pid = cancelInfo.getPerformanceId().toString();
         List<SseEmitter> emitterList = this.emitters.get(pid);
         emitterList.forEach(sseEmitter ->

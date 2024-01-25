@@ -2,7 +2,7 @@ package com.wanted.preonboarding.ticket.application;
 
 import com.wanted.preonboarding.ticket.application.dto.request.ReservationCancelRequest;
 import com.wanted.preonboarding.ticket.application.dto.request.ReserveRequest;
-import com.wanted.preonboarding.ticket.application.dto.response.ReserveCancelResponse;
+import com.wanted.preonboarding.ticket.application.dto.response.ReservationCancelResponse;
 import com.wanted.preonboarding.ticket.application.dto.response.ReserveResponse;
 import com.wanted.preonboarding.ticket.domain.dto.PerformanceInfo;
 import com.wanted.preonboarding.ticket.domain.entity.Performance;
@@ -82,7 +82,7 @@ public class TicketSeller {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public ReserveCancelResponse cancelReservation(ReservationCancelRequest request) {
+    public ReservationCancelResponse cancelReservation(ReservationCancelRequest request) {
         Performance targetPerformance = performanceRepository.findById(UUID.fromString(request.getPerformanceId()))
                 .orElseThrow();
         Reservation targetReservation = reservationRepository
@@ -95,6 +95,6 @@ public class TicketSeller {
                 .orElseThrow();
         reservationRepository.delete(targetReservation);
 
-        return ReserveCancelResponse.of(targetReservation,targetPerformance);
+        return ReservationCancelResponse.of(targetReservation,targetPerformance);
     }
 }

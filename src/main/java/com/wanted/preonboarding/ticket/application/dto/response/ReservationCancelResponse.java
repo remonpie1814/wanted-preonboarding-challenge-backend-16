@@ -12,7 +12,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReserveCancelResponse {
+public class ReservationCancelResponse {
     private UUID performanceId;
     private String performanceName;
     private Date startDate;
@@ -20,8 +20,8 @@ public class ReserveCancelResponse {
     private char line;
     private int seat;
 
-    public static ReserveCancelResponse of(Reservation reservation, Performance performance) {
-        return ReserveCancelResponse
+    public static ReservationCancelResponse of(Reservation reservation, Performance performance) {
+        return ReservationCancelResponse
                 .builder()
                 .performanceId(reservation.getPerformanceId())
                 .performanceName(performance.getName())
