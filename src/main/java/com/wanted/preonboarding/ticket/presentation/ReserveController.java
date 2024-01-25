@@ -29,7 +29,6 @@ public class ReserveController {
     @PostMapping("/")
     public ResponseEntity<ResponseHandler<ReserveResponse>> reserve(@RequestBody ReserveRequest request) throws NotEnoughAmountException, NotFoundException {
         System.out.println("reserve...");
-
         return ResponseEntity
                 .ok()
                 .body(ResponseHandler.<ReserveResponse>builder()
