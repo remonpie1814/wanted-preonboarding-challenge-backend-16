@@ -1,6 +1,8 @@
 package com.wanted.preonboarding.ticket.presentation;
 
 import com.wanted.preonboarding.core.domain.response.ResponseHandler;
+import com.wanted.preonboarding.core.exception.NotEnoughAmountException;
+import com.wanted.preonboarding.core.exception.NotFoundException;
 import com.wanted.preonboarding.notification.application.MessageSender;
 import com.wanted.preonboarding.ticket.application.TicketSeller;
 import com.wanted.preonboarding.ticket.application.dto.request.ReservationCancelRequest;
@@ -25,7 +27,7 @@ public class ReserveController {
 
     // 예약
     @PostMapping("/")
-    public ResponseEntity<ResponseHandler<ReserveResponse>> reserve(@RequestBody ReserveRequest request) {
+    public ResponseEntity<ResponseHandler<ReserveResponse>> reserve(@RequestBody ReserveRequest request) throws NotEnoughAmountException, NotFoundException {
         System.out.println("reserve...");
 
         return ResponseEntity
@@ -60,7 +62,7 @@ public class ReserveController {
 
     // 예약 취소
     @PostMapping("/cancel")
-    public ResponseEntity<ResponseHandler<String>> cancel(@RequestBody ReservationCancelRequest request) {
+    public ResponseEntity<ResponseHandler<String>> cancel(@RequestBody ReservationCancelRequest request) throws NotFoundException {
         System.out.println("cancel...");
         ReservationCancelResponse response =  ticketSeller.cancelReservation(request);
         messageSender.sendCancelledEvent(response);

@@ -1,5 +1,6 @@
 package com.wanted.preonboarding.ticket.domain.entity;
 
+import com.wanted.preonboarding.core.exception.NotEnoughAmountException;
 import lombok.*;
 
 @Builder
@@ -12,14 +13,10 @@ public class User {
     private String phoneNumber;
     private int amount;
 
-    public void pay(int money) {
-        if (this.amount-money<0){
-            try {
-                throw new Exception();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+    public void pay(int money) throws NotEnoughAmountException {
+        if (this.amount - money < 0) {
+            throw new NotEnoughAmountException();
         }
-        this.amount-=money;
+        this.amount -= money;
     }
 }
