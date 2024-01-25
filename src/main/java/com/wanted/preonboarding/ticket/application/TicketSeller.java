@@ -1,6 +1,8 @@
 package com.wanted.preonboarding.ticket.application;
 
+import com.wanted.preonboarding.ticket.application.dto.request.ReserveCancelRequest;
 import com.wanted.preonboarding.ticket.application.dto.request.ReserveRequest;
+import com.wanted.preonboarding.ticket.application.dto.response.ReserveCancelResponse;
 import com.wanted.preonboarding.ticket.application.dto.response.ReserveResponse;
 import com.wanted.preonboarding.ticket.domain.dto.PerformanceInfo;
 import com.wanted.preonboarding.ticket.domain.dto.ReserveInfo;
@@ -31,9 +33,9 @@ public class TicketSeller {
 
     public List<PerformanceInfo> getAllPerformanceInfoList(String isReserve) {
         return performanceRepository.findByIsReserve(isReserve)
-            .stream()
-            .map(PerformanceInfo::of)
-            .toList();
+                .stream()
+                .map(PerformanceInfo::of)
+                .toList();
     }
 
     public PerformanceInfo getPerformanceInfoDetail(String name) {
@@ -45,7 +47,7 @@ public class TicketSeller {
         // 예약정보
         Reservation reservation = request.getReservation();
         // 공연정보
-        Performance performance = performanceRepository.findByIdAndIsReserve(UUID.fromString(request.getPerformanceId()),"enable")
+        Performance performance = performanceRepository.findByIdAndIsReserve(UUID.fromString(request.getPerformanceId()), "enable")
                 .orElseThrow();
         // 좌석정보
         PerformanceSeatInfo seatInfo = seatInfoRepository
@@ -62,7 +64,7 @@ public class TicketSeller {
         // 예약
         reservationRepository.save(reservation);
 
-        return ReserveResponse.of(reservation,performance);
+        return ReserveResponse.of(reservation, performance);
     }
 
     // 모든 예약 목록
@@ -79,11 +81,19 @@ public class TicketSeller {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List<Reservation> cancelReservation(UUID performanceId, int round, char line, int seat) {
-        List<Reservation> targetReservations = reservationRepository.findByPerformanceIdAndRoundAndLineAndSeat(performanceId, round, line, seat);
-        targetReservations.forEach(reservation -> {
-            reservationRepository.delete(reservation);
-        });
-        return targetReservations;
+    public ReserveCancelResponse cancelReservation(ReserveCancelRequest request) {
+        Performance targetPerformance = performanceRepository.findById(UUID.fromString(request.getPerformanceId()))
+                .orElseThrow();
+        Reservation targetReservation = reservationRepository
+                .findByPerformanceIdAndRoundAndLineAndSeat(
+                        UUID.fromString(request.getPerformanceId()),
+                        request.getRound(),
+                        request.getLine(),
+                        request.getSeat()
+                )
+                .orElseThrow();
+        reservationRepository.delete(targetReservation);
+
+        return ReserveCancelResponse.of(targetReservation,targetPerformance);
     }
 }

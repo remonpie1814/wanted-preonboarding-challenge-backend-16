@@ -1,5 +1,6 @@
 package com.wanted.preonboarding.notification.emitter;
 
+import com.wanted.preonboarding.ticket.application.dto.response.ReserveCancelResponse;
 import com.wanted.preonboarding.ticket.domain.dto.ReserveInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -49,13 +50,13 @@ public class SseEmitters {
 
     }
 
-    public void sendCancelledEvent(ReserveInfo reserveInfo){
-        String pid = reserveInfo.getPerformanceId().toString();
+    public void sendCancelledEvent(ReserveCancelResponse cancelInfo){
+        String pid = cancelInfo.getPerformanceId().toString();
         List<SseEmitter> emitterList = this.emitters.get(pid);
         emitterList.forEach(sseEmitter ->
                 {
                     try {
-                        sseEmitter.send(SseEmitter.event().name("cancel").data(reserveInfo));
+                        sseEmitter.send(SseEmitter.event().name("cancel").data(cancelInfo));
                     } catch (IOException e) {
                         sseEmitter.completeWithError(e);
                     }

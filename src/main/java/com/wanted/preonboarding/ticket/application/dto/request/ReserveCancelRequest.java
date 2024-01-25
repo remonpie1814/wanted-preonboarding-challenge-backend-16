@@ -1,12 +1,15 @@
 package com.wanted.preonboarding.ticket.application.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class ReserveCancelRequest {
-
+    private String performanceId;
+    private int round;
+    private char line;
+    private int seat;
 }

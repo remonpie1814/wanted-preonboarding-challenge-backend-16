@@ -3,7 +3,9 @@ package com.wanted.preonboarding.ticket.presentation;
 import com.wanted.preonboarding.core.domain.response.ResponseHandler;
 import com.wanted.preonboarding.notification.application.SendMessage;
 import com.wanted.preonboarding.ticket.application.TicketSeller;
+import com.wanted.preonboarding.ticket.application.dto.request.ReserveCancelRequest;
 import com.wanted.preonboarding.ticket.application.dto.request.ReserveRequest;
+import com.wanted.preonboarding.ticket.application.dto.response.ReserveCancelResponse;
 import com.wanted.preonboarding.ticket.application.dto.response.ReserveResponse;
 import com.wanted.preonboarding.ticket.domain.dto.ReserveInfo;
 import com.wanted.preonboarding.ticket.domain.entity.Reservation;
@@ -61,26 +63,12 @@ public class ReserveController {
 
     // 예약 취소
     @PostMapping("/cancel")
-    public ResponseEntity<ResponseHandler<String>> cancel(@RequestBody ReserveInfo reserveInfo) {
+    public ResponseEntity<ResponseHandler<String>> cancel(@RequestBody ReserveCancelRequest request) {
         System.out.println("cancel...");
 
-        // 여러 개 지울 때를 대비해 List로
-        List<Reservation> cancelledReservations = ticketSeller.cancelReservation(
-                reserveInfo.getPerformanceId(),
-                reserveInfo.getRound(),
-                reserveInfo.getLine(),
-                reserveInfo.getSeat()
-        );
+        ReserveCancelResponse response =  ticketSeller.cancelReservation(request);
 
-        // note: 조인연산으로 하면 좋지 않을까???
-        List<ReserveInfo> reserveInfos = cancelledReservations
-                .stream()
-                .map(reservation -> {
-                    return ReserveInfo.of(reservation, ticketSeller.getPerformanceName(reservation.getPerformanceId()));
-                })
-                .toList();
-
-        reserveInfos.forEach(sendMessage::sendCancelledEvent);
+        sendMessage.sendCancelledEvent(response);
 
         return ResponseEntity
                 .ok()
