@@ -25,30 +25,4 @@ public class ReserveInfo {
     private char line;
     private int seat;
 
-
-    public static ReserveInfo of(Reservation entity, String performanceName) {
-        return ReserveInfo.builder()
-                .performanceId(entity.getPerformanceId())
-                .performanceName(performanceName)
-                .reservationName(entity.getName())
-                .reservationPhoneNumber(entity.getPhoneNumber())
-                .round(entity.getRound())
-                .line(entity.getLine())
-                .seat(entity.getSeat())
-                .build();
-    }
-
-    public static ReserveInfo of(ReserveInfo entity, String performanceName) {
-        return ReserveInfo.builder()
-                .performanceId(entity.getPerformanceId())
-                .performanceName(performanceName)
-                .reservationName(entity.getReservationName())
-                .reservationPhoneNumber(entity.getReservationPhoneNumber())
-                .amount(entity.getAmount())
-                .round(entity.getRound())
-                .line(entity.getLine())
-                .seat(entity.getSeat())
-                .build();
-    }
-
 }

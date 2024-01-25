@@ -35,16 +35,4 @@ public class Reservation {
     private char line;
     private int seat;
 
-    public static Reservation of(ReserveInfo info) {
-        return Reservation.builder()
-            .performanceId(info.getPerformanceId())
-            .name(info.getReservationName())
-            .phoneNumber(info.getReservationPhoneNumber())
-            .round(info.getRound())
-            .gate(1)
-            .line(info.getLine())
-            .seat(info.getSeat())
-            .build();
-    }
-
 }
