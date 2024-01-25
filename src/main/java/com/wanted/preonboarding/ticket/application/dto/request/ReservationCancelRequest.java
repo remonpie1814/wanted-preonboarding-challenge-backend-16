@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ReserveCancelRequest {
+public class ReservationCancelRequest {
     private String performanceId;
     private int round;
     private char line;

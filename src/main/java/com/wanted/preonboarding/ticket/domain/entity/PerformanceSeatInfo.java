@@ -28,5 +28,9 @@ public class PerformanceSeatInfo {
     @Column(nullable = false, name = "is_reserve", columnDefinition = "varchar default 'disable'")
     private String isReserve;
 
+    public void changeEnable() {
+        this.isReserve = this.isReserve.equals("enable") ? "disable" : "enable";
+    }
+
 
 }
