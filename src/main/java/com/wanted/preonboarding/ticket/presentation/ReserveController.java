@@ -52,7 +52,7 @@ public class ReserveController {
                         .data(
                                 ticketSeller.getReservationByNameAndPhone(request.getName(),request.getPhoneNumber())
                                 .stream()
-                                .map(reservation -> ReservationFindResponse.of(reservation, ticketSeller.getPerformanceName(reservation.getPerformanceId())))
+                                .map(ReservationFindResponse::of)
                                 .toList()
                         )
                         .build()

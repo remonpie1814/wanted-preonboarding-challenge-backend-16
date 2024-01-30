@@ -1,5 +1,6 @@
 package com.wanted.preonboarding.ticket.application.dto.request;
 
+import com.wanted.preonboarding.ticket.domain.entity.Performance;
 import com.wanted.preonboarding.ticket.domain.entity.PerformanceSeatInfo;
 import com.wanted.preonboarding.ticket.domain.entity.Reservation;
 import com.wanted.preonboarding.ticket.domain.entity.User;
@@ -25,8 +26,8 @@ public class ReserveRequest {
         return Reservation
                 .builder()
                 .name(this.name)
+                .performance(Performance.builder().id(UUID.fromString(this.performanceId)).build())
                 .phoneNumber(this.phoneNumber)
-                .performanceId(UUID.fromString(this.performanceId))
                 .round(this.round)
                 .line(this.line)
                 .seat(this.seat)

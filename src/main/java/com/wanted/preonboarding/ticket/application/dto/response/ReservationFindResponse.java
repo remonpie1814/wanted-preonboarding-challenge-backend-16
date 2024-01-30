@@ -19,11 +19,11 @@ public class ReservationFindResponse {
     private String reservationName;
     private String reservationPhoneNumber;
 
-    public static ReservationFindResponse of(Reservation reservation, String performanceName) {
+    public static ReservationFindResponse of(Reservation reservation) {
         return ReservationFindResponse
                 .builder()
-                .performanceId(reservation.getPerformanceId())
-                .performanceName(performanceName)
+                .performanceId(reservation.getPerformance().getId())
+                .performanceName(reservation.getPerformance().getName())
                 .round(reservation.getRound())
                 .line(reservation.getLine())
                 .seat(reservation.getSeat())

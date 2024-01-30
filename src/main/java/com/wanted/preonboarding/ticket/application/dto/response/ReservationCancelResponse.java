@@ -23,7 +23,7 @@ public class ReservationCancelResponse {
     public static ReservationCancelResponse of(Reservation reservation, Performance performance) {
         return ReservationCancelResponse
                 .builder()
-                .performanceId(reservation.getPerformanceId())
+                .performanceId(performance.getId())
                 .performanceName(performance.getName())
                 .startDate(performance.getStart_date().toString())
                 .round(reservation.getRound())
