@@ -4,6 +4,7 @@ import com.wanted.preonboarding.core.exception.NotEnoughAmountException;
 import com.wanted.preonboarding.core.exception.NotFoundException;
 import com.wanted.preonboarding.ticket.application.dto.request.ReservationCancelRequest;
 import com.wanted.preonboarding.ticket.application.dto.request.ReserveRequest;
+import com.wanted.preonboarding.ticket.application.dto.response.PerformanceDetailResponse;
 import com.wanted.preonboarding.ticket.application.dto.response.ReservationCancelResponse;
 import com.wanted.preonboarding.ticket.application.dto.response.ReserveResponse;
 import com.wanted.preonboarding.ticket.domain.dto.PerformanceInfo;
@@ -30,30 +31,31 @@ public class TicketSeller {
     private final ReservationRepository reservationRepository;
     private final PerformanceSeatInfoRepository seatInfoRepository;
 
-    public List<PerformanceInfo> getAllPerformanceInfoList(String isReserve) {
+    public List<PerformanceDetailResponse> getAllPerformanceList(String isReserve) {
         if (isReserve == null) {
-            return getAllPerformanceInfoList();
+            return getAllPerformanceList();
         }
         return performanceRepository.findByIsReserve(isReserve)
                 .stream()
-                .map(PerformanceInfo::of)
+                .map(PerformanceDetailResponse::of)
                 .toList();
     }
 
-    public List<PerformanceInfo> getAllPerformanceInfoList() {
+    public List<PerformanceDetailResponse> getAllPerformanceList() {
         return performanceRepository.findAll()
                 .stream()
-                .map(PerformanceInfo::of)
+                .map(PerformanceDetailResponse::of)
                 .toList();
     }
 
-    public Performance getPerformanceInfoDetail(String name) {
-        return performanceRepository.findByName(name)
-                .orElseThrow(()-> new NotFoundException("공연"));
+    public PerformanceDetailResponse getPerformanceDetail(String name) {
+        return PerformanceDetailResponse.of(performanceRepository
+                .findByName(name)
+                .orElseThrow(()-> new NotFoundException("공연")));
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public ReserveResponse reserve(ReserveRequest request) throws NotFoundException, NotEnoughAmountException {
+    public ReserveResponse reserve(ReserveRequest request) {
         // 예약정보
         Reservation reservation = request.getReservation();
         // 공연정보

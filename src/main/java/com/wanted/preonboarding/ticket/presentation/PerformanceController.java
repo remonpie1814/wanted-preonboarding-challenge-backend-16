@@ -2,8 +2,8 @@ package com.wanted.preonboarding.ticket.presentation;
 
 import com.wanted.preonboarding.core.domain.response.ResponseHandler;
 import com.wanted.preonboarding.ticket.application.TicketSeller;
+import com.wanted.preonboarding.ticket.application.dto.response.PerformanceDetailResponse;
 import com.wanted.preonboarding.ticket.domain.dto.PerformanceInfo;
-import com.wanted.preonboarding.ticket.domain.entity.Performance;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,26 +23,26 @@ public class PerformanceController {
     // 공연 목록
     // 예약가능 여부로 필터링 가능.
     @GetMapping("/all")
-    public ResponseEntity<ResponseHandler<List<PerformanceInfo>>> getAllPerformanceInfoList(@RequestParam(value = "isReserve", required = false) String isReserve) {
+    public ResponseEntity<ResponseHandler<List<PerformanceDetailResponse>>> getAllPerformanceInfoList(@RequestParam(value = "isReserve", required = false) String isReserve) {
         return ResponseEntity
                 .ok()
-                .body(ResponseHandler.<List<PerformanceInfo>>builder()
+                .body(ResponseHandler.<List<PerformanceDetailResponse>>builder()
                         .message("Success")
                         .statusCode(HttpStatus.OK)
-                        .data(ticketSeller.getAllPerformanceInfoList(isReserve))
+                        .data(ticketSeller.getAllPerformanceList(isReserve))
                         .build()
                 );
     }
 
     // 공연 이름으로 공연 찾기
     @GetMapping("/")
-    public ResponseEntity<ResponseHandler<Performance>> getPerformanceInfo(@RequestParam String name){
+    public ResponseEntity<ResponseHandler<PerformanceDetailResponse>> getPerformanceInfo(@RequestParam String name){
         return ResponseEntity
                 .ok()
-                .body(ResponseHandler.<Performance>builder()
+                .body(ResponseHandler.<PerformanceDetailResponse>builder()
                         .message("Success")
                         .statusCode(HttpStatus.OK)
-                        .data(ticketSeller.getPerformanceInfoDetail(name))
+                        .data(ticketSeller.getPerformanceDetail(name))
                         .build()
                 );
     }

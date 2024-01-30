@@ -2,6 +2,7 @@ package com.wanted.preonboarding.ticket.presentation;
 
 import com.wanted.preonboarding.core.domain.response.ResponseHandler;
 import com.wanted.preonboarding.ticket.application.TicketSeller;
+import com.wanted.preonboarding.ticket.application.dto.response.PerformanceDetailResponse;
 import com.wanted.preonboarding.ticket.domain.dto.PerformanceInfo;
 import com.wanted.preonboarding.ticket.domain.entity.Reservation;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +19,13 @@ public class QueryController {
     private final TicketSeller ticketSeller;
 
     @GetMapping("/all/performance")
-    public ResponseEntity<ResponseHandler<List<PerformanceInfo>>> getAllPerformanceInfoList() {
+    public ResponseEntity<ResponseHandler<List<PerformanceDetailResponse>>> getAllPerformanceInfoList() {
         return ResponseEntity
             .ok()
-            .body(ResponseHandler.<List<PerformanceInfo>>builder()
+            .body(ResponseHandler.<List<PerformanceDetailResponse>>builder()
                 .message("Success")
                 .statusCode(HttpStatus.OK)
-                .data(ticketSeller.getAllPerformanceInfoList())
+                .data(ticketSeller.getAllPerformanceList())
                 .build()
             );
     }
