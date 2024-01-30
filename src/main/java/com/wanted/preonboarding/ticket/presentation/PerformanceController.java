@@ -3,6 +3,7 @@ package com.wanted.preonboarding.ticket.presentation;
 import com.wanted.preonboarding.core.domain.response.ResponseHandler;
 import com.wanted.preonboarding.ticket.application.TicketSeller;
 import com.wanted.preonboarding.ticket.domain.dto.PerformanceInfo;
+import com.wanted.preonboarding.ticket.domain.entity.Performance;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,10 +36,10 @@ public class PerformanceController {
 
     // 공연 이름으로 공연 찾기
     @GetMapping("/")
-    public ResponseEntity<ResponseHandler<PerformanceInfo>> getPerformanceInfo(@RequestParam String name){
+    public ResponseEntity<ResponseHandler<Performance>> getPerformanceInfo(@RequestParam String name){
         return ResponseEntity
                 .ok()
-                .body(ResponseHandler.<PerformanceInfo>builder()
+                .body(ResponseHandler.<Performance>builder()
                         .message("Success")
                         .statusCode(HttpStatus.OK)
                         .data(ticketSeller.getPerformanceInfoDetail(name))

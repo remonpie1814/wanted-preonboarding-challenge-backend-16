@@ -27,7 +27,7 @@ public class ReserveController {
 
     // 예약
     @PostMapping("/")
-    public ResponseEntity<ResponseHandler<ReserveResponse>> reserve(@RequestBody ReserveRequest request) throws NotEnoughAmountException, NotFoundException {
+    public ResponseEntity<ResponseHandler<ReserveResponse>> reserve(@RequestBody ReserveRequest request) {
         System.out.println("reserve...");
         return ResponseEntity
                 .ok()
@@ -62,7 +62,6 @@ public class ReserveController {
     // 예약 취소
     @PostMapping("/cancel")
     public ResponseEntity<ResponseHandler<ReservationCancelResponse>> cancel(@RequestBody ReservationCancelRequest request) throws NotFoundException {
-        System.out.println("cancel...");
         ReservationCancelResponse response =  ticketSeller.cancelReservation(request);
         messageSender.sendCancelledEvent(response);
 

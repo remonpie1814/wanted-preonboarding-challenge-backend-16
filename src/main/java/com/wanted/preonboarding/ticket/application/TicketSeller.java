@@ -47,8 +47,9 @@ public class TicketSeller {
                 .toList();
     }
 
-    public PerformanceInfo getPerformanceInfoDetail(String name) {
-        return PerformanceInfo.of(performanceRepository.findByName(name));
+    public Performance getPerformanceInfoDetail(String name) {
+        return performanceRepository.findByName(name)
+                .orElseThrow(()-> new NotFoundException("공연"));
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -57,7 +58,7 @@ public class TicketSeller {
         Reservation reservation = request.getReservation();
         // 공연정보
         Performance performance = performanceRepository.findByIdAndIsReserve(UUID.fromString(request.getPerformanceId()), "enable")
-                .orElseThrow(() -> new NotFoundException("Performance"));
+                .orElseThrow(() -> new NotFoundException("공연"));
         // 좌석정보
         PerformanceSeatInfo seatInfo = seatInfoRepository
                 .findByPerformanceIdAndRoundAndLineAndSeatAndIsReserve(
@@ -66,7 +67,7 @@ public class TicketSeller {
                         request.getLine(),
                         request.getSeat(),
                         "enable"
-                ).orElseThrow(() -> new NotFoundException("Seat"));
+                ).orElseThrow(() -> new NotFoundException("좌석"));
         // 지불
         request.getUser().pay(performance.getPrice());
 
@@ -86,7 +87,11 @@ public class TicketSeller {
     }
 
     public List<Reservation> getReservationByNameAndPhone(String name, String phoneNumber) {
-        return reservationRepository.findByNameAndPhoneNumber(name, phoneNumber);
+        List<Reservation> reservations = reservationRepository.findByNameAndPhoneNumber(name, phoneNumber);
+        if (reservations.size() < 1) {
+            throw new NotFoundException("예약");
+        }
+        return reservations;
     }
 
     public String getPerformanceName(UUID performanceId) {
@@ -96,7 +101,7 @@ public class TicketSeller {
     @Transactional(rollbackOn = Exception.class)
     public ReservationCancelResponse cancelReservation(ReservationCancelRequest request) throws NotFoundException {
         Performance targetPerformance = performanceRepository.findById(UUID.fromString(request.getPerformanceId()))
-                .orElseThrow(() -> new NotFoundException("Performance"));
+                .orElseThrow(() -> new NotFoundException("공연"));
         Reservation targetReservation = reservationRepository
                 .findByPerformanceIdAndRoundAndLineAndSeat(
                         UUID.fromString(request.getPerformanceId()),
@@ -104,7 +109,7 @@ public class TicketSeller {
                         request.getLine(),
                         request.getSeat()
                 )
-                .orElseThrow(() -> new NotFoundException("Reservation"));
+                .orElseThrow(() -> new NotFoundException("예약"));
 
         PerformanceSeatInfo seatInfo = seatInfoRepository
                 .findByPerformanceIdAndRoundAndLineAndSeatAndIsReserve(
@@ -113,7 +118,7 @@ public class TicketSeller {
                         request.getLine(),
                         request.getSeat(),
                         "disable"
-                ).orElseThrow(() -> new NotFoundException("Seat"));
+                ).orElseThrow(() -> new NotFoundException("좌석"));
         seatInfo.changeEnable();
         seatInfoRepository.save(seatInfo);
 
