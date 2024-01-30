@@ -31,7 +31,17 @@ public class TicketSeller {
     private final PerformanceSeatInfoRepository seatInfoRepository;
 
     public List<PerformanceInfo> getAllPerformanceInfoList(String isReserve) {
+        if (isReserve == null) {
+            return getAllPerformanceInfoList();
+        }
         return performanceRepository.findByIsReserve(isReserve)
+                .stream()
+                .map(PerformanceInfo::of)
+                .toList();
+    }
+
+    public List<PerformanceInfo> getAllPerformanceInfoList() {
+        return performanceRepository.findAll()
                 .stream()
                 .map(PerformanceInfo::of)
                 .toList();

@@ -2,7 +2,6 @@ package com.wanted.preonboarding.ticket.presentation;
 
 import com.wanted.preonboarding.notification.application.MessageSender;
 import com.wanted.preonboarding.ticket.application.dto.response.ReservationCancelResponse;
-import com.wanted.preonboarding.ticket.domain.dto.ReserveInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

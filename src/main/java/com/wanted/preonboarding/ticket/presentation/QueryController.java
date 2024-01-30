@@ -3,7 +3,6 @@ package com.wanted.preonboarding.ticket.presentation;
 import com.wanted.preonboarding.core.domain.response.ResponseHandler;
 import com.wanted.preonboarding.ticket.application.TicketSeller;
 import com.wanted.preonboarding.ticket.domain.dto.PerformanceInfo;
-import com.wanted.preonboarding.ticket.domain.dto.ReserveInfo;
 import com.wanted.preonboarding.ticket.domain.entity.Reservation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,18 +18,13 @@ public class QueryController {
     private final TicketSeller ticketSeller;
 
     @GetMapping("/all/performance")
-    public ResponseEntity<ResponseHandler<List<PerformanceInfo>>> getAllPerformanceInfoList(@RequestParam(value = "isReserve", required = false) String isReserve) {
-        System.out.println(isReserve+"--------");
-        if(isReserve==null){
-            isReserve="enable";
-        }
-        System.out.println("getAllPerformanceInfoList");
+    public ResponseEntity<ResponseHandler<List<PerformanceInfo>>> getAllPerformanceInfoList() {
         return ResponseEntity
             .ok()
             .body(ResponseHandler.<List<PerformanceInfo>>builder()
                 .message("Success")
                 .statusCode(HttpStatus.OK)
-                .data(ticketSeller.getAllPerformanceInfoList(isReserve))
+                .data(ticketSeller.getAllPerformanceInfoList())
                 .build()
             );
     }
@@ -51,17 +45,7 @@ public class QueryController {
                 );
     }
 
-    @GetMapping("/performance")
-    public ResponseEntity<ResponseHandler<PerformanceInfo>> getPerformanceInfo(@RequestParam String name){
-        return ResponseEntity
-                .ok()
-                .body(ResponseHandler.<PerformanceInfo>builder()
-                        .message("Success")
-                        .statusCode(HttpStatus.OK)
-                        .data(ticketSeller.getPerformanceInfoDetail(name))
-                        .build()
-                );
-    }
+
 
 
 }
