@@ -1,22 +1,28 @@
 package com.wanted.preonboarding.notification.application;
 
+import com.wanted.preonboarding.notification.emitter.EmitterContainer;
 import com.wanted.preonboarding.notification.emitter.SseEmitters;
 import com.wanted.preonboarding.ticket.application.dto.response.ReservationCancelResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class MessageSender {
     private final SseEmitters sseEmitters;
 
-    public void add(String performanceId, SseEmitter emitter) {
-        sseEmitters.add(performanceId, emitter);
+    public void add(UUID emitterId, String performanceId) {
+        sseEmitters.add(emitterId, performanceId);
     }
 
-    public void sendEvent(String performanceId, String message) {
-        sseEmitters.sendEvent(performanceId, message);
+    public EmitterContainer getEmitter(UUID emitterId, String performanceId){
+        return sseEmitters.getEmitterById(emitterId,performanceId);
+    }
+
+    public void sendEvent(UUID emitterId, String message) {
+        sseEmitters.sendEvent(emitterId, message);
     }
     public void sendCancelledEvent(ReservationCancelResponse response){sseEmitters.sendCancelledEvent(response);}
 }
