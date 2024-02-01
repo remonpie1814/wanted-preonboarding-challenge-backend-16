@@ -1,6 +1,7 @@
 package com.wanted.preonboarding.notification.emitter;
 
 import com.wanted.preonboarding.ticket.application.dto.response.ReservationCancelResponse;
+import com.wanted.preonboarding.ticket.domain.entity.Notification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -16,23 +17,24 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SseEmitters {
     private final Map<UUID, EmitterContainer> emitters = new ConcurrentHashMap<>();
 
-    public EmitterContainer add(UUID emitterId, String performanceId) {
-        UUID finalEmitterId =  emitterId == null ? UUID.randomUUID() : emitterId;
-        SseEmitter sseEmitter = new SseEmitter();
-        EmitterContainer emitterContainer = EmitterContainer.builder().id(finalEmitterId).performanceId(performanceId).emitter(sseEmitter).build();
-        this.emitters.put(finalEmitterId, emitterContainer);
-        log.info("새 emitter 추가: {}- {}", finalEmitterId, emitterContainer);
+    public EmitterContainer add(List<Notification> notifications) {
+        // 타임아웃 10분
+        SseEmitter sseEmitter = new SseEmitter(1000L * 600L);
+        UUID emitterId = UUID.randomUUID();
+        EmitterContainer container = EmitterContainer.of(notifications,sseEmitter,emitterId);
+        this.emitters.put(emitterId,container);
+        log.info("새 emitter 추가: {}- {}", emitterId,container);
         log.info("emitter가 {}개", emitters.size());
         sseEmitter.onCompletion(() -> {
             log.info("onCompletion callback");
-            this.emitters.remove(finalEmitterId);
+            this.emitters.remove(emitterId);
         });
         sseEmitter.onTimeout(() -> {
             log.info("onTimeout callback");
             sseEmitter.complete();
         });
 
-        return emitterContainer;
+        return container;
     }
 
     public void sendEvent(UUID to, String message) {
@@ -50,7 +52,7 @@ public class SseEmitters {
 
     public void sendCancelledEvent(ReservationCancelResponse cancelInfo) {
         String performanceId = cancelInfo.getPerformanceId().toString();
-        List<EmitterContainer> emitterContainerList = this.emitters.values().stream().filter(entry -> entry.getPerformanceId().equals(performanceId)).toList();
+        List<EmitterContainer> emitterContainerList = this.emitters.values().stream().filter(entry -> entry.getPerformanceIds().contains(performanceId)).toList();
         if (emitterContainerList.isEmpty()) return;
         emitterContainerList.forEach(emitterContainer ->
                 {
@@ -63,9 +65,11 @@ public class SseEmitters {
         );
     }
 
-    public EmitterContainer getEmitterById(UUID emitterId, String performanceId) {
-        if (emitterId == null || this.emitters.get(emitterId) == null) return this.add(emitterId, performanceId);
-        return this.emitters.get(emitterId);
-
+    public EmitterContainer getEmitter(String name, String phoneNumber){
+        for (EmitterContainer container:this.emitters.values()){
+             if (container.getPhoneNumber().equals(phoneNumber)&&container.getUserName().equals(name)){return container;}
+        }
+        return null;
     }
+
 }
